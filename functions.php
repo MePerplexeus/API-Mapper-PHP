@@ -15,32 +15,44 @@ function cleanURI() {
     return (endsWith($_SERVER['REQUEST_URI'], '/')) ? substr($_SERVER['REQUEST_URI'], 1, -1) : substr($_SERVER['REQUEST_URI'], 1);
 }
 
+function IsNullOrEmptyString($str){
+    return ($str === null || trim($str) === '');
+}
+
 function run_api($URI, $endpoints) {
-    $endpoint = $endpoints[$URI[0]];
-    array_shift($URI);
+    if (!IsNullOrEmptyString($URI[0])) {
+        $endpoint = $endpoints[$URI[0]];
+        array_shift($URI);
 
-    if (count($URI)) {
-        return run_api($URI, $endpoint);
-
-    } else {
-
-        if (is_callable($endpoint)) {
-            // echo '{callable: '.$endpoint.'}'; // check called function name
-            return $endpoint();
+        if (count($URI)) {
+            return run_api($URI, $endpoint);
 
         } else {
-            // echo "{uncallable: 404}";
-            return err_404();
 
+            if (is_callable($endpoint)) {
+                // echo '{callable: '.$endpoint.'}'; // check called function name
+                return $endpoint();
+
+            } else {
+                // echo "{uncallable: 404}";
+                return err_404();
+
+            }
         }
+    } else {
+        // echo "{uncallable: 404}";
+        return err_404();
     }
 }
 
 function err_404() {
-    $myObj->status = http_response_text(http_response_code());
-    $myObj->code = 404;
-    $myObj->message = "Errno 404: Page not Found. ):";
-    $myObj->http_origin = (isset($_SERVER['HTTP_REFERER'])) ? $_SERVER['HTTP_REFERER'] : null;
+    http_response_code(404);
+    $myObj = [
+        "status" => http_response_text(http_response_code()),
+        "code" => http_response_code(),
+        "message" => "Errno 404: Page not Found. ):",
+        "http_origin" => (isset($_SERVER['HTTP_REFERER'])) ? $_SERVER['HTTP_REFERER'] : null,
+    ];
 
     $myJSON = json_encode($myObj);
 
@@ -48,10 +60,13 @@ function err_404() {
 }
 
 function err_500() {
-    $myObj->status = http_response_text(http_response_code());
-    $myObj->code = 500;
-    $myObj->message = "Errno 500: Internal Server Error. ):";
-    $myObj->http_origin = (isset($_SERVER['HTTP_REFERER'])) ? $_SERVER['HTTP_REFERER'] : null;
+    http_response_code(500);
+    $myObj = [
+        "status" => http_response_text(http_response_code()),
+        "code" => http_response_code(),
+        "message" => "Errno 500: Internal Server Error. ):",
+        "http_origin" => (isset($_SERVER['HTTP_REFERER'])) ? $_SERVER['HTTP_REFERER'] : null,
+    ];
 
     $myJSON = json_encode($myObj);
 
