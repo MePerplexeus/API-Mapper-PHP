@@ -40,6 +40,7 @@ function err_404() {
     $myObj->status = http_response_text(http_response_code());
     $myObj->code = 404;
     $myObj->message = "Errno 404: Page not Found. ):";
+    $myObj->http_origin = (isset($_SERVER['HTTP_REFERER'])) ? $_SERVER['HTTP_REFERER'] : null;
 
     $myJSON = json_encode($myObj);
 
@@ -50,6 +51,7 @@ function err_500() {
     $myObj->status = http_response_text(http_response_code());
     $myObj->code = 500;
     $myObj->message = "Errno 500: Internal Server Error. ):";
+    $myObj->http_origin = (isset($_SERVER['HTTP_REFERER'])) ? $_SERVER['HTTP_REFERER'] : null;
 
     $myJSON = json_encode($myObj);
 
@@ -68,7 +70,7 @@ function perplexeus() {
             "site" => "https://me.perplexeus.com/",
             "insta" => "https://instagram.com/perplexeus/",
         ],
-        "http_origin" => $_SERVER['HTTP_ORIGIN'],
+        "http_origin" => (isset($_SERVER['HTTP_REFERER'])) ? $_SERVER['HTTP_REFERER'] : null,
     ];
 
     $myJSON = json_encode($myObj);
@@ -80,11 +82,11 @@ function perplexeus() {
 function cors() {
     
     // Allow from any origin
-    if (isset($_SERVER['HTTP_ORIGIN'])) {
-        if (in_array($_SERVER['HTTP_ORIGIN'], ALLOWED_ORIGINS)){
-            // Decide if the origin in $_SERVER['HTTP_ORIGIN'] is one
+    if (isset($_SERVER['HTTP_REFERER'])) {
+        if (in_array($_SERVER['HTTP_REFERER'], ALLOWED_ORIGINS)){
+            // Decide if the origin in $_SERVER['HTTP_REFERER'] is one
             // you want to allow, and if so:
-            header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
+            header("Access-Control-Allow-Origin: {$_SERVER['HTTP_REFERER']}");
             header('Access-Control-Allow-Credentials: true');
             header('Access-Control-Max-Age: 86400');    // cache for 1 day
         }

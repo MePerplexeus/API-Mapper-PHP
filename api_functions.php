@@ -8,7 +8,7 @@ function do_echo() {
         "code" => http_response_code(),
         "message" => "Testing in progress!",
         "result" => "Successful",
-        "http_origin" => $_SERVER['HTTP_ORIGIN']
+        "http_origin" => (isset($_SERVER['HTTP_REFERER'])) ? $_SERVER['HTTP_REFERER'] : null
     ];
 
     $myJSON = json_encode($myObj);
