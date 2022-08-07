@@ -11,8 +11,10 @@ echo (IMPORTS_CHECK) ? "Main Page Loaded!<br>" : '';
 // CORS
 cors();
 
+addEndpoint('/me/contact', 'perplexeus');
+
 // MAIN_CODE
-$URI = explode('/', cleanURI());
+$URI = cleanURI($_SERVER['REQUEST_URI']);
 $res = run_api($URI, $endpoints);
 // echo $res;
 echo json_encode(json_decode($res), JSON_PRETTY_PRINT);

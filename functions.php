@@ -11,8 +11,8 @@ function endsWith( $haystack, $needle ) {
     return substr( $haystack, -$length ) === $needle;
 }
 
-function cleanURI() {
-    return (endsWith($_SERVER['REQUEST_URI'], '/')) ? substr($_SERVER['REQUEST_URI'], 1, -1) : substr($_SERVER['REQUEST_URI'], 1);
+function cleanURI($URI) {
+    return explode('/', (endsWith($URI, '/')) ? substr($URI, 1, -1) : substr($URI, 1));
 }
 
 function IsNullOrEmptyString($str){
@@ -168,6 +168,32 @@ function http_response_text($code = NULL) {
             default: $text = 'Unknown http status code "' . $code . '"'; break;
         }
         return $text;
+    }
+}
+
+function flatCall($data_arr, $data_arr_call){
+    $current = $data_arr;
+    foreach($data_arr_call as $key){
+        $current = $current[$key];
+    }
+
+    return $current;
+}
+
+function addEndpoint($URI, $function) {
+    global $endpoints;
+
+    if (!IsNullOrEmptyString($URI) && is_callable($function)) {
+        $keys = cleanURI($URI);
+        $string='$endpoints';
+        foreach($keys as $index => $key)
+            {   
+            $string.="['".$key."']";
+            }
+        $string.= '='.$function.';';
+        eval($string);
+
+        // echo json_encode($endpoints);
     }
 }
 
