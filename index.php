@@ -17,9 +17,12 @@ cors();
 // MAIN_CODE
 $URI = cleanURI($_SERVER['REQUEST_URI']);
 
+// print_r($URI);
 // API Version Check & Access
-if (file_exists(__DIR__ . DIRECTORY_SEPARATOR . $URI[0] . DIRECTORY_SEPARATOR . 'index.php')) {
-    include(__DIR__ . DIRECTORY_SEPARATOR . $URI[0] . DIRECTORY_SEPARATOR . 'index.php');
+if (count($URI) > 1) {
+    if (file_exists(__DIR__ . DIRECTORY_SEPARATOR . $URI[0] . DIRECTORY_SEPARATOR . 'index.php')) {
+        include(__DIR__ . DIRECTORY_SEPARATOR . $URI[0] . DIRECTORY_SEPARATOR . 'index.php');
+    }
 }
 
 $res = run_api($URI, $endpoints);

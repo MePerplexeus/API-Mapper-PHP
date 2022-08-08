@@ -12,7 +12,11 @@ function endsWith( $haystack, $needle ) {
 }
 
 function cleanURI($URI) {
-    return explode('/', (endsWith($URI, '/')) ? substr($URI, 1, -1) : substr($URI, 1));
+    $clean_URI = explode('/', (endsWith($URI, '/')) ? substr($URI, 1, -1) : substr($URI, 1));
+    // if (count($clean_URI) === 1 && IsNullOrEmptyString($clean_URI[0])) {
+    //     array_shift($clean_URI);
+    // }
+    return $clean_URI;
 }
 
 function IsNullOrEmptyString($str){
@@ -20,7 +24,7 @@ function IsNullOrEmptyString($str){
 }
 
 function run_api($URI, $endpoints) {
-    if (!IsNullOrEmptyString($URI[0])) {
+    // if (!IsNullOrEmptyString($URI[0])) {
 
         if (!array_key_exists($URI[0], $endpoints)) {
             return err_404();
@@ -44,10 +48,10 @@ function run_api($URI, $endpoints) {
 
             }
         }
-    } else {
-        // echo "{uncallable: 404}";
-        return err_404();
-    }
+    // } else {
+    //     // echo "{uncallable: 404}";
+    //     return err_404();
+    // }
 }
 
 function cors() {
@@ -125,15 +129,6 @@ function http_response_text($code = NULL) {
         }
         return $text;
     }
-}
-
-function flatCall($data_arr, $data_arr_call){
-    $current = $data_arr;
-    foreach($data_arr_call as $key){
-        $current = $current[$key];
-    }
-
-    return $current;
 }
 
 function addEndpoint($URI, $function) {
