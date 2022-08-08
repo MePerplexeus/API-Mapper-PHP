@@ -19,10 +19,8 @@ $URI = cleanURI($_SERVER['REQUEST_URI']);
 
 // API Version Check & Access
 if (file_exists(__DIR__ . DIRECTORY_SEPARATOR . $URI[0] . DIRECTORY_SEPARATOR . 'index.php')) {
-    require_once(__DIR__ . DIRECTORY_SEPARATOR . $URI[0] . DIRECTORY_SEPARATOR . 'index.php');
+    include(__DIR__ . DIRECTORY_SEPARATOR . $URI[0] . DIRECTORY_SEPARATOR . 'index.php');
 }
-
-// echo () ? 'File exists!<br>' : 'File doesn\'t exist!<br>';
 
 $res = run_api($URI, $endpoints);
 // echo $res;
