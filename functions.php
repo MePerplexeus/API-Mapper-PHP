@@ -12,7 +12,8 @@ function endsWith( $haystack, $needle ) {
 }
 
 function cleanURI($URI) {
-    $clean_URI = explode('/', (endsWith($URI, '/')) ? substr($URI, 1, -1) : substr($URI, 1));
+    $URI = explode('?', (endsWith($URI, '/')) ? substr($URI, 1, -1) : substr($URI, 1))[0];
+    $clean_URI = explode('/', $URI);
     // if (count($clean_URI) === 1 && IsNullOrEmptyString($clean_URI[0])) {
     //     array_shift($clean_URI);
     // }
@@ -150,7 +151,22 @@ function addEndpoint($URI, $function) {
 function showEndpoints() {
     global $endpoints;
 
+    // ADD_AUTHENTICATION
+    // check for a specific key in the get array ($_GET['key'])
+    // if it exists and check out, continue with the function
+    // else return json_encode($endpoints); and close
+
     // ADD_VERSIONS_TO_MAP
+    // if (isset($_GET['ver'])) {
+    //     if (is_array($_GET['ver'])) {
+    //         // loop through array $_GET['ver'][0--1]
+    //         // check if version is valid (i.e. it exists)
+    //         // then include the version
+    //     } else {
+    //         // check if version is valid (i.e. it exists)
+    //         // then include the version
+    //     }
+    // }
     include(__DIR__ . DIRECTORY_SEPARATOR . 'v1' . DIRECTORY_SEPARATOR . 'index.php');
 
     return json_encode($endpoints);
