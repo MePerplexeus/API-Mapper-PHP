@@ -186,12 +186,13 @@ function addEndpoint($URI, $function) {
     if (!IsNullOrEmptyString($URI) && is_callable($function)) {
         $keys = cleanURI($URI);
         $string='$endpoints';
-        foreach($keys as $index => $key)
-            {   
+        foreach($keys as $index => $key) {   
             $string.="['".$key."']";
-            }
-        $string.= '='.$function.';';
+        }
+        $string.= '="'.$function.'";';
         eval($string);
+
+        // echo $string;
 
         // echo json_encode($endpoints);
     }
