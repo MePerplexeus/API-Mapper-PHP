@@ -147,4 +147,13 @@ function addEndpoint($URI, $function) {
     }
 }
 
+function showEndpoints() {
+    global $endpoints;
+
+    // ADD_VERSIONS_TO_MAP
+    include(__DIR__ . DIRECTORY_SEPARATOR . 'v1' . DIRECTORY_SEPARATOR . 'index.php');
+
+    return json_encode($endpoints);
+}
+
 ?>

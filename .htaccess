@@ -1,6 +1,6 @@
 <IfModule mod_rewrite.c>
 
-    # Options +FollowSymLinks
+    Options +FollowSymLinks
     # RewriteEngine on
 
     # RewriteBase /
