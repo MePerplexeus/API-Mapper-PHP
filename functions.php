@@ -169,7 +169,15 @@ function showEndpoints() {
     // }
     include(__DIR__ . DIRECTORY_SEPARATOR . 'v1' . DIRECTORY_SEPARATOR . 'index.php');
 
-    return json_encode($endpoints);
+    $myObj = [
+        "status" => http_response_text(http_response_code()),
+        "code" => http_response_code(),
+        "message" => "Endpoints Mapper",
+        "endpoints_map" => $endpoints,
+        "http_origin" => (isset($_SERVER['HTTP_REFERER'])) ? $_SERVER['HTTP_REFERER'] : null,
+    ];
+
+    return json_encode($myObj);
 }
 
 ?>
