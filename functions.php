@@ -191,9 +191,7 @@ function addEndpoint($URI, $function) {
         }
         $string.= '="'.$function.'";';
         eval($string);
-
-        // echo $string;
-
+        
         // echo json_encode($endpoints);
     }
 }
