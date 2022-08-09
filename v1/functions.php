@@ -1,5 +1,7 @@
 <?php
 
+require_once(__DIR__ . DIRECTORY_SEPARATOR . 'homepage' . DIRECTORY_SEPARATOR . 'functions.php');
+
 function todaysQuote() {
     $curl = curl_init();
     curl_setopt($curl, CURLOPT_URL, "https://zenquotes.io/api/today");
@@ -17,7 +19,7 @@ function todaysQuote() {
     return json_encode($myObj);
 }
 
-function perplexeus_v1() {
+function perplexeus_auth() {
     $auth = authorization_check();
     if ($auth[0]) {
         return perplexeus();
@@ -26,5 +28,9 @@ function perplexeus_v1() {
     }
     
 }
+
+
+// IMPORTS_CHECK
+import_check('API v1 Functions Loaded!');
 
 ?>
