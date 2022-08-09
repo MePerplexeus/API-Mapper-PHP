@@ -8,8 +8,6 @@ require_once(__DIR__ . DIRECTORY_SEPARATOR . 'functions.php');
 require_once(__DIR__ . DIRECTORY_SEPARATOR . 'api_functions.php');
 require_once(__DIR__ . DIRECTORY_SEPARATOR . 'endpoints.php');
 
-// IMPORTS_CHECK
-echo (IMPORTS_CHECK) ? "Main Page Loaded!<br>" : '';
 
 // CORS
 cors();
@@ -29,5 +27,9 @@ $res = run_api($URI, $endpoints);
 // echo $res;
 echo json_encode(json_decode($res), JSON_PRETTY_PRINT);
 // var_dump(headers_list());
+
+
+// IMPORTS_CHECK
+import_check('Main Page Loaded!', true);
 
 ?>

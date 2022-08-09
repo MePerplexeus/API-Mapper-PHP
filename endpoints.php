@@ -1,7 +1,5 @@
 <?php
 
-echo (IMPORTS_CHECK) ? "Endpoints Loaded!<br>" : '';
-
 // Endpoints
 $endpoints = [
     "test" => 'test',
@@ -17,5 +15,8 @@ $endpoints = [
     ],
 ];
 
+
+// IMPORTS_CHECK
+import_check('Core Endpoints Loaded!');
 
 ?>

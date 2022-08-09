@@ -17,6 +17,11 @@ define('ALLOWED_ORIGINS', [
 ]);
 
 // IMPORTS_CHECK
-echo (IMPORTS_CHECK) ? "Config Loaded!<br>" : '';
+function import_check($message, $nextLine=false) {
+    echo (IMPORTS_CHECK) ? (($nextLine)? '
+': '' )." • ".$message."
+" : '';
+}
+import_check('Config Loaded!');
 
 ?>

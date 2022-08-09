@@ -1,6 +1,4 @@
 <?php
-// IMPORTS_CHECK
-echo (IMPORTS_CHECK) ? "API Functions Loaded!<br>" : '';
 
 function test() {
     $myObj = [
@@ -62,5 +60,9 @@ function perplexeus() {
 
     return $myJSON;
 }
+
+
+// IMPORTS_CHECK
+import_check('API Functions Loaded!');
 
 ?>

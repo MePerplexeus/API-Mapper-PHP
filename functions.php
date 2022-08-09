@@ -1,8 +1,5 @@
 <?php
 
-// IMPORTS_CHECK
-echo (IMPORTS_CHECK) ? "Functions Loaded!<br>" : '';
-
 function endsWith( $haystack, $needle ) {
     $length = strlen( $needle );
     if( !$length ) {
@@ -236,5 +233,9 @@ function genKeyHash() {
     return json_encode($myObj);
 
 }
+
+
+// IMPORTS_CHECK
+import_check('Functions Loaded!');
 
 ?>
