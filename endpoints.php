@@ -8,6 +8,7 @@ $endpoints = [
     "dev" => 'perplexeus',
     "help" => [
         'endpoints' => 'showEndpoints',
+        'genkeyhash' => 'genKeyHash',
     ],
     "err" => [
         "404" => 'err_404',

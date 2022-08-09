@@ -150,34 +150,91 @@ function addEndpoint($URI, $function) {
 
 function showEndpoints() {
     global $endpoints;
+    $authorized = false;
+    $failed = [];
 
     // ADD_AUTHENTICATION
     // check for a specific key in the get array ($_GET['key'])
     // if it exists and check out, continue with the function
     // else return json_encode($endpoints); and close
+    if (isset($_GET['key']) && password_verify($_GET['key'], ENC_KEY)) {
+        // authorized, continue...
+        $authorized = true;
+    } else {
+        // unauthorized, stop mapping!
+        $myObj = [
+            "status" => http_response_text(http_response_code()),
+            "code" => http_response_code(),
+            "message" => "Endpoints Mapper",
+            "user" => "anonymous",
+            "request" => (isset($_GET['ver'])) ? $_GET['ver'] : null,
+            "unsuccessful" => (isset($_GET['ver'])) ? $_GET['ver'] : null,
+            "authorized" => $authorized,
+            "endpoints_map" => $endpoints,
+            "http_origin" => (isset($_SERVER['HTTP_REFERER'])) ? $_SERVER['HTTP_REFERER'] : null,
+        ];
+        return json_encode($myObj);
+    }
 
     // ADD_VERSIONS_TO_MAP
-    // if (isset($_GET['ver'])) {
-    //     if (is_array($_GET['ver'])) {
-    //         // loop through array $_GET['ver'][0--1]
-    //         // check if version is valid (i.e. it exists)
-    //         // then include the version
-    //     } else {
-    //         // check if version is valid (i.e. it exists)
-    //         // then include the version
-    //     }
-    // }
-    include(__DIR__ . DIRECTORY_SEPARATOR . 'v1' . DIRECTORY_SEPARATOR . 'index.php');
+    if (isset($_GET['ver'])) {$failed = [];
+        if (is_array($_GET['ver'])) {
+            // loop through array $_GET['ver'][0--1]
+            // check if version is valid (i.e. it exists)
+            // then include the version
+            foreach ($_GET['ver'] as $value) {
+                if (file_exists(__DIR__ . DIRECTORY_SEPARATOR . $value . DIRECTORY_SEPARATOR . 'index.php')) {
+                    include(__DIR__ . DIRECTORY_SEPARATOR . $value . DIRECTORY_SEPARATOR . 'index.php');
+                } else {
+                    array_push($failed, $value);
+                }
+            }
+        } else {
+            // check if version is valid (i.e. it exists)
+            // then include the version
+            if (file_exists(__DIR__ . DIRECTORY_SEPARATOR . $_GET['ver'] . DIRECTORY_SEPARATOR . 'index.php')) {
+                include(__DIR__ . DIRECTORY_SEPARATOR . $_GET['ver'] . DIRECTORY_SEPARATOR . 'index.php');
+            } else {
+                array_push($failed, $_GET['ver']);
+            }
+        }
+    }
 
     $myObj = [
         "status" => http_response_text(http_response_code()),
         "code" => http_response_code(),
         "message" => "Endpoints Mapper",
+        "user" => "admin",
+        "request" => (isset($_GET['ver'])) ? $_GET['ver'] : null,
+        "unsuccessful" => (isset($_GET['ver'])) ? $failed : null,
+        "authorized" => $authorized,
         "endpoints_map" => $endpoints,
         "http_origin" => (isset($_SERVER['HTTP_REFERER'])) ? $_SERVER['HTTP_REFERER'] : null,
     ];
 
     return json_encode($myObj);
+}
+
+function genKeyHash() {
+    $key = (isset($_GET['key'])) ? $_GET['key'] : uniqid();
+
+    $myObj = [
+        "status" => http_response_text(http_response_code()),
+        "code" => http_response_code(),
+        "message" => "Key Hash Generator",
+        "steps" => [
+            "Enter key as \$_GET['key'] variable (" . URL . "/help/genkeyhash?key={yourkey}) otherwise a unique key will be generated for you (" . URL . "/help/genkeyhash).",
+            "Keep your key safe & secrect with you.",
+            "Copy and Paste the hash in the ENC_KEY in the config.php file and save the file.",
+            "Now you can access your api mapper by entering your key in the endpoint mapper api (" . URL . "/help/endpoints?ver={v1}&key={yourkey}). ",
+        ],
+        "your_key" => $key,
+        "your_hash" => password_hash($key, PASSWORD_DEFAULT),
+        "http_origin" => (isset($_SERVER['HTTP_REFERER'])) ? $_SERVER['HTTP_REFERER'] : null,
+    ];
+
+    return json_encode($myObj);
+
 }
 
 ?>
