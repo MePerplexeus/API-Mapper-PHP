@@ -234,6 +234,27 @@ function genKeyHash() {
 
 }
 
+function authorization_check() {
+    if (isset($_GET['key']) && password_verify($_GET['key'], ENC_KEY)) {
+
+        return [true];
+
+    } else {
+
+        http_response_code(401);
+
+        $myObj = [
+            "status" => http_response_text(http_response_code()),
+            "code" => http_response_code(),
+            "message" => "Unauthorized request! Please use the API Key as directed in documentation!",
+            "http_origin" => (isset($_SERVER['HTTP_REFERER'])) ? $_SERVER['HTTP_REFERER'] : null,
+        ];
+
+        return [false, json_encode($myObj)];
+
+    }
+}
+
 
 // IMPORTS_CHECK
 import_check('Functions Loaded!');

@@ -17,4 +17,14 @@ function todaysQuote() {
     return json_encode($myObj);
 }
 
+function perplexeus_v1() {
+    $auth = authorization_check();
+    if ($auth[0]) {
+        return perplexeus();
+    } else {
+        return $auth[1];
+    }
+    
+}
+
 ?>
