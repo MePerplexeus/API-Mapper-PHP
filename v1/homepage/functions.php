@@ -6,7 +6,15 @@ function get_banners() {
     if ($auth[0]) {
 
         $banners = [
-            'https://www.freepik.com/vectors/background-banner',
+            [
+                "bg" => [
+                    "mobile" => "https://www.freepik.com/vectors/background-banner",
+                    "tablet" => "https://www.freepik.com/vectors/background-banner",
+                    "desktop" => "https://www.freepik.com/vectors/background-banner",
+                ],
+                "heading" => "Anime - The source of my motivation",
+                "subheading" => "Anime - The source of my motivation",
+            ],
             'https://www.freepik.com/vectors/background-banner',
             'https://www.freepik.com/vectors/background-banner',
         ];
