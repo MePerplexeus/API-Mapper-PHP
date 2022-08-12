@@ -2,8 +2,7 @@
 
 function get_banners() {
     
-    $auth = authorization_check();
-    if ($auth[0]) {
+    return authorize(function() {
 
         // required input data
         // => page (homepage/userdash)
@@ -72,9 +71,22 @@ function get_banners() {
 
         return json_encode($myObj);
 
-    } else {
-        return $auth[1];
-    }
+    });
+}
+
+function test_auth() {
+    return authorize(function() {
+
+        $myObj = [
+            "status" => http_response_text(http_response_code()),
+            "code" => http_response_code(),
+            "message" => "Auth Func Check",
+            "result" => "Successful Check!",
+            "http_origin" => (isset($_SERVER['HTTP_REFERER'])) ? $_SERVER['HTTP_REFERER'] : null,
+        ];
+
+        return json_encode($myObj);
+    });
 }
 
 // IMPORTS_CHECK
