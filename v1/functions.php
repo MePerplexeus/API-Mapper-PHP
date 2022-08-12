@@ -20,13 +20,7 @@ function todaysQuote() {
 }
 
 function perplexeus_auth() {
-    $auth = authorization_check();
-    if ($auth[0]) {
-        return perplexeus();
-    } else {
-        return $auth[1];
-    }
-    
+    return authorize(perplexeus);
 }
 
 

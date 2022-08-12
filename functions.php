@@ -255,6 +255,18 @@ function authorization_check() {
     }
 }
 
+function authorize($user_function) {
+    
+    $auth = authorization_check();
+    if ($auth[0]) {
+
+        return $user_function();
+
+    } else {
+        return $auth[1];
+    }
+}
+
 
 // IMPORTS_CHECK
 import_check('Functions Loaded!');
