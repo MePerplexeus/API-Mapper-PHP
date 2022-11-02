@@ -1,5 +1,23 @@
 <?php
 
+function genJsonOutputFormat($result, $message="API Response", $identifier="result", $addonKeys=[]) {
+    $myObj = [
+        "status" => http_response_text(http_response_code()),
+        "code" => http_response_code(),
+        "message" => $message,
+        $identifier => $result,
+        "http_origin" => (isset($_SERVER['HTTP_REFERER'])) ? $_SERVER['HTTP_REFERER'] : null
+    ];
+
+    foreach ($addonKeys as $key => $pair) {
+        $myObj[$key] = $pair;
+    }
+
+    $myJSON = json_encode($myObj);
+
+    return $myJSON;
+}
+
 function endsWith( $haystack, $needle ) {
     $length = strlen( $needle );
     if( !$length ) {
@@ -9,11 +27,12 @@ function endsWith( $haystack, $needle ) {
 }
 
 function cleanURI($URI) {
-    $URI = explode('?', (endsWith($URI, '/')) ? substr($URI, 1, -1) : substr($URI, 1))[0];
+    $URI = explode('?', $URI)[0];
+
+    $URI = (endsWith($URI, '/')) ? substr($URI, 1, -1) : substr($URI, 1);
+
     $clean_URI = explode('/', $URI);
-    // if (count($clean_URI) === 1 && IsNullOrEmptyString($clean_URI[0])) {
-    //     array_shift($clean_URI);
-    // }
+    
     return $clean_URI;
 }
 
@@ -23,7 +42,7 @@ function IsNullOrEmptyString($str){
 
 function run_api($URI, $endpoints) {
     // if (!IsNullOrEmptyString($URI[0])) {
-
+        // print_r($URI);
         if (!array_key_exists($URI[0], $endpoints)) {
             return err_404();
         }
@@ -50,6 +69,41 @@ function run_api($URI, $endpoints) {
     //     // echo "{uncallable: 404}";
     //     return err_404();
     // }
+}
+
+function htmlToModule($key, $content) {
+    if (is_array($key) && is_array($content)) {
+        foreach($key as $index=>$key_name) {
+            $arr[$key_name] = $content[$index];
+        }
+        echo json_encode($arr);
+        return;
+    } else {
+        $arr[$key] = $content;
+        echo json_encode($arr);
+        return;
+    }
+    
+}
+
+function printStats() {
+    return authorize(function() {
+        global $URI;
+        $p = $_POST;
+        $g = $_GET;
+        unset($p['key']);
+        unset($g['key']);
+        $myObj = genJsonOutputFormat([
+                "URI" => $URI,
+                "GET" => $g,
+                "POST" => $p,
+                "SESSION" => $_SESSION,
+                "COOKIE" => $_COOKIE,
+                "PHPSESSID" => session_id(),
+            ], $message="All Stats", $identifier="stats", $addonKeys=[]);
+
+        return $myObj;
+    });
 }
 
 function cors() {
@@ -159,18 +213,13 @@ function showEndpoints() {
         $authorized = true;
     } else {
         // unauthorized, stop mapping!
-        $myObj = [
-            "status" => http_response_text(http_response_code()),
-            "code" => http_response_code(),
-            "message" => "Endpoints Mapper",
-            "user" => "anonymous",
-            "request" => (isset($_GET['ver'])) ? $_GET['ver'] : null,
-            "unsuccessful" => (isset($_GET['ver'])) ? $_GET['ver'] : null,
-            "authorized" => $authorized,
-            "endpoints_map" => $endpoints,
-            "http_origin" => (isset($_SERVER['HTTP_REFERER'])) ? $_SERVER['HTTP_REFERER'] : null,
-        ];
-        return json_encode($myObj);
+        $myObj = genJsonOutputFormat("anonymous", $message="Endpoints Mapper", $identifier="user", $addonKeys=[
+                "request" => (isset($_GET['ver'])) ? $_GET['ver'] : null,
+                "unsuccessful" => (isset($_GET['ver'])) ? $_GET['ver'] : null,
+                "authorized" => $authorized,
+                "endpoints_map" => $endpoints,
+            ]);
+        return $myObj;
     }
 
     // ADD_VERSIONS_TO_MAP
@@ -197,45 +246,35 @@ function showEndpoints() {
         }
     }
 
-    $myObj = [
-        "status" => http_response_text(http_response_code()),
-        "code" => http_response_code(),
-        "message" => "Endpoints Mapper",
-        "user" => "admin",
-        "request" => (isset($_GET['ver'])) ? $_GET['ver'] : null,
-        "unsuccessful" => (isset($_GET['ver'])) ? $failed : null,
-        "authorized" => $authorized,
-        "endpoints_map" => $endpoints,
-        "http_origin" => (isset($_SERVER['HTTP_REFERER'])) ? $_SERVER['HTTP_REFERER'] : null,
-    ];
+    $myObj = genJsonOutputFormat("admin", $message="Endpoints Mapper", $identifier="user", $addonKeys=[
+            "request" => (isset($_GET['ver'])) ? $_GET['ver'] : null,
+            "unsuccessful" => (isset($_GET['ver'])) ? $failed : null,
+            "authorized" => $authorized,
+            "endpoints_map" => $endpoints,
+        ]);
 
-    return json_encode($myObj);
+    return $myObj;
 }
 
 function genKeyHash() {
     $key = (isset($_GET['key'])) ? $_GET['key'] : uniqid();
 
-    $myObj = [
-        "status" => http_response_text(http_response_code()),
-        "code" => http_response_code(),
-        "message" => "Key Hash Generator",
-        "steps" => [
+    $myObj = genJsonOutputFormat([
             "Enter key as \$_GET['key'] variable (" . URL . "/help/genkeyhash?key={yourkey}) otherwise a unique key will be generated for you (" . URL . "/help/genkeyhash).",
             "Keep your key safe & secrect with you.",
             "Copy and Paste the hash in the ENC_KEY in the config.php file and save the file.",
             "Now you can access your api mapper by entering your key in the endpoint mapper api (" . URL . "/help/endpoints?ver={v1}&key={yourkey}). ",
-        ],
-        "your_key" => $key,
-        "your_hash" => password_hash($key, PASSWORD_DEFAULT),
-        "http_origin" => (isset($_SERVER['HTTP_REFERER'])) ? $_SERVER['HTTP_REFERER'] : null,
-    ];
+        ], $message="Key Hash Generator", $identifier="steps", $addonKeys=[
+            "your_key" => $key,
+            "your_hash" => password_hash($key, PASSWORD_DEFAULT),
+        ]);
 
-    return json_encode($myObj);
+    return $myObj;
 
 }
 
 function authorization_check() {
-    if (isset($_GET['key']) && password_verify($_GET['key'], ENC_KEY)) {
+    if ((isset($_GET['key']) && password_verify($_GET['key'], ENC_KEY)) || (isset($_POST['key']) && password_verify($_POST['key'], ENC_KEY))) {
 
         return [true];
 
@@ -243,14 +282,9 @@ function authorization_check() {
 
         http_response_code(401);
 
-        $myObj = [
-            "status" => http_response_text(http_response_code()),
-            "code" => http_response_code(),
-            "message" => "Unauthorized request! Please use the API Key as directed in documentation!",
-            "http_origin" => (isset($_SERVER['HTTP_REFERER'])) ? $_SERVER['HTTP_REFERER'] : null,
-        ];
+        $myObj = genJsonOutputFormat("Auth Failed", $message="Unauthorized request! Please use the API Key as directed in documentation!", $identifier="result", $addonKeys=["GET" => $_GET, "POST" => $_POST]);
 
-        return [false, json_encode($myObj)];
+        return [false, $myObj];
 
     }
 }
@@ -264,6 +298,24 @@ function authorize($user_function) {
 
     } else {
         return $auth[1];
+    }
+}
+
+
+// Cookie Functions
+function setMyCookie($cookie_name, $cookie_val) {
+    setcookie($cookie_name, $cookie_val, (time() + 315360000), '/', '.'.BASE_URL); // cookie valid for 10 years
+}
+function getMyCookie($cookie_name) {
+    return (!isset($_COOKIE[$cookie_name])) ? "not set!" : $_COOKIE[$cookie_name];
+}
+function unsetMyCookie($cookie_name) {
+    if (isset($_COOKIE[$cookie_name])) {
+        unset($_COOKIE[$cookie_name]); 
+        setcookie($cookie_name, null, -1, '/', '.'.BASE_URL); 
+        return true;
+    } else {
+        return false;
     }
 }
 
