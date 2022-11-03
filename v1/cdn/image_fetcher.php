@@ -11,17 +11,23 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
         if ($type === '.svg') {
             $path = 'icons';
         } elseif ($type === '.mp4' || $type === '.m4v' || $type === '.avi' || $type === '.mpd') {
-            $path = 'logo';
+            $path = 'videos';
         } else {
-            if (isset($_GET['logo']) && !empty($_GET['logo'])) {
+            if (isset($_GET['logo'])) {
                 $path = 'logo';
+                $type = 'png';
             } else {
                 $path = 'images';
             }
         }
     } else {
-        $type = 'jpg';
-        $path = 'images';
+        if (isset($_GET['logo'])) {
+            $path = 'logo';
+            $type = 'png';
+        } else {
+            $path = 'images';
+            $type = 'jpg';
+        }
     }
 
     // check if image file exists by details
