@@ -1,5 +1,9 @@
 <?php
 
+function sqlf_dt() {
+    return date("Y-m-d H:i:s");
+}
+
 function sql_init($h, $u, $p, $db) {
     define('DB_HOST', $h);
     define('DB_USER', $u);
@@ -11,7 +15,7 @@ function sql_init($h, $u, $p, $db) {
 function presuf(&$value, $key, $count) {
     $ps = '`';
     $pse = ($key < ($count-1)) ? '`, ' : '`';
-    $value = $ps . $value . $pse;
+    $value = $ps . esc_str($value) . $pse;
 }
 
 function conditionString($conditions, $link) {
