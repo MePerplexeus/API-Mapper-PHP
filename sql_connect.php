@@ -5,10 +5,10 @@ function sqlf_dt() {
 }
 
 function sql_init($h, $u, $p, $db) {
-    define('DB_HOST', $h);
-    define('DB_USER', $u);
-    define('DB_PASS', $p);
-    define('DB_TABLE', $db);
+    if (!defined('DB_HOST')) { define('DB_HOST', $h); }
+    if (!defined('DB_USER')) { define('DB_USER', $u); }
+    if (!defined('DB_PASS')) { define('DB_PASS', $p); }
+    if (!defined('DB_TABLE')) { define('DB_TABLE', $db); }
 }
 
 
