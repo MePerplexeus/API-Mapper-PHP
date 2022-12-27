@@ -293,7 +293,12 @@ function authorize($user_function) {
     
     $auth = authorization_check();
     if ($auth[0]) {
-
+        
+        $arg_list = func_get_args();
+        if (count($arg_list) > 1) {
+            $func = array_shift($arg_list);
+            return call_user_func_array($func, $arg_list);
+        }
         return $user_function();
 
     } else {
