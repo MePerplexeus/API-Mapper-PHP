@@ -18,11 +18,12 @@ function presuf(&$value, $key, $count) {
     $value = $ps . esc_str($value) . $pse;
 }
 
-function conditionString($conditions, $link) {
+function conditionString($conditions, $link, $or_operator=false) {
     $s = [];
     foreach ($conditions as $column => $value) {
         array_push($s, "`".esc_str($column)."`='".esc_str($value)."'");
     }
+    if ($or_operator) return implode(' OR ', $s);
     return implode(' AND ', $s);
 }
 
@@ -59,7 +60,7 @@ function sqlCustom($query, $type="SELECT", $charset=false) {
             } else {
                 $rows = [];
                 $output['result'] = false;
-                $output['Message'] = "Failed to fetch rows";
+                $output['message'] = "Failed to fetch rows";
             }
             $output['detail']['rows'] = $rows;
             $output['detail']['count'] = mysqli_num_rows($res);
@@ -92,7 +93,7 @@ function sqlCustom($query, $type="SELECT", $charset=false) {
 
 }
 
-function sqlCrt($items, $table) {
+function sqlCrt($items, $table, $only_query=false) {
     // If successful insert
     /*returns [
         "detail" => [
@@ -127,6 +128,11 @@ function sqlCrt($items, $table) {
 
     $query = "INSERT INTO `" . esc_str($table) . "` ( " . esc_str(implode(', ', $cols)) . " ) VALUES ( " . implode(', ', $vals) . " )";
 
+    
+    if ($only_query) { 
+        return $query; 
+    }
+
     if ($res = mysqli_query($link, $query)) {
         
         $last_id = mysqli_insert_id($link);
@@ -154,7 +160,7 @@ function sqlCrt($items, $table) {
 
 }
 
-function sqlGet($item_col, $table, $conditions=[]) {
+function sqlGet($item_col, $table, $conditions=[], $only_query=false, $or_operator=false) {
     // $res['result'][row:0][col_value:0]
     /*returns [
         "count" => number of rows in result,
@@ -181,10 +187,14 @@ function sqlGet($item_col, $table, $conditions=[]) {
         $item_cols = '`'.$item_col.'`';
     }
 
-    $conditions = conditionString($conditions, $link);
+    $conditions = conditionString($conditions, $link, $or_operator);
     
     
     $query = 'SELECT '.esc_str($item_cols).' FROM `'.esc_str($table)."`".(($conditions !== "") ? (' WHERE '.$conditions) : '');
+
+    if ($only_query) { 
+        return $query; 
+    }
 
     if ($uidd = mysqli_query($link, $query)) {
         
@@ -226,7 +236,7 @@ function sqlGet($item_col, $table, $conditions=[]) {
 
 }
 
-function sqlUpd($table, $conditions, $items) {
+function sqlUpd($table, $conditions, $items, $only_query=false) {
     // $table = 'table_name'
     // $conditions = [
     //     "column_name" => "value"
@@ -251,6 +261,10 @@ function sqlUpd($table, $conditions, $items) {
     $conditions = partialQueryStringGenerator($conditions, $link, true);
 
     $query = "UPDATE `" . esc_str($table) . "` SET" . $items . (($conditions !== "") ? (' WHERE '.$conditions) : '');
+
+    if ($only_query) { 
+        return $query; 
+    }
 
     if ($uidd = mysqli_query($link, $query)) {
         // Row Updated Successfully
@@ -282,7 +296,7 @@ function sqlUpd($table, $conditions, $items) {
 
 }
 
-function sqlDel($table, $conditions) {
+function sqlDel($table, $conditions, $only_query=false) {
     // $table = 'table_name'
     // $conditions = [
     //     "column_name" => "value"
@@ -295,6 +309,10 @@ function sqlDel($table, $conditions) {
     $conditions = conditionString($conditions, $link);
 
     $query = "DELETE FROM `" . esc_str($table) . "`".(($conditions !== "") ? (' WHERE '.$conditions) : '');
+
+    if ($only_query) { 
+        return $query; 
+    }
 
     if ($uidd = mysqli_query($link, $query)) {
         // Row Deleted Successfully
