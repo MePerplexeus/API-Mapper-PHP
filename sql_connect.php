@@ -20,10 +20,15 @@ function presuf(&$value, $key, $count) {
 
 function conditionString($conditions, $link, $or_operator=false) {
     $s = [];
+    if ($or_operator) {
+        foreach ($conditions[1] as $column => $value) {
+            array_push($s, "`".esc_str($conditions[0])."`='".esc_str($value)."'");
+        }
+        return implode(' OR ', $s);
+    }
     foreach ($conditions as $column => $value) {
         array_push($s, "`".esc_str($column)."`='".esc_str($value)."'");
     }
-    if ($or_operator) return implode(' OR ', $s);
     return implode(' AND ', $s);
 }
 
